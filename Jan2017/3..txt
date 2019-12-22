@@ -1,0 +1,61 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define MP make_pair
+#define PB push_back
+
+using namespace std;
+
+int arr[11][11];
+pair<int, int> findLowerRight(int a) {
+	for (int i = a-1; i >= 0; i--) {
+		for (int j = a-1; j >= 0; j--) {
+			if (arr[i][j] == 1) {
+				return make_pair(i, j);
+			}
+		}
+	}
+	return make_pair(-1, -1);
+}
+bool perfectArr(int a) {
+	for (int i = 0; i < a; i++) {
+		for (int j = 0; j < a; j++) {
+			if (arr[i][j] != 0) return false;
+		}
+	}
+	return true;
+}
+int main() {
+	ifstream cin ("cowtip.in"); ofstream cout ("cowtip.out");
+	int a; cin >> a;
+	
+	for (int i = 0; i < a; i++) {
+		for (int j = 0; j < a; j++) {
+			char temp; cin >> temp;
+			arr[i][j] = temp - '0';
+		}
+	}
+	int counter = 1;
+	while (true) {
+		int bottomX = findLowerRight(a).first, bottomY = findLowerRight(a).second;
+		if (bottomX == -1 && bottomY == -1) {
+			cout << "0" << endl;
+		}
+//		cout << topColumn << " " << bottomX << " " << bottomY << endl;
+		for (int i = 0; i <= bottomX; i++) {
+			for (int j = 0; j <= bottomY; j++) {
+				if (arr[i][j] == 0) arr[i][j] = 1;
+				else arr[i][j] = 0;
+			}
+		}
+		if (perfectArr(a)) {
+			break;
+		}
+		counter++;
+	}
+	cout << counter << endl;
+}
