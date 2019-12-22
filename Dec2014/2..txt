@@ -1,0 +1,54 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define mp make_pair
+#define pb push_back
+
+using namespace std;
+
+char puzzle[51][51];
+int rows, columns;
+bool isHorizontal(int x, int y) {
+	if (y < columns-2) { // size constraint checked
+		if ((puzzle[x][y-1] == '#' || y == 0) && puzzle[x][y+1] == '.' && puzzle[x][y+2] == '.') {
+			return true;	
+		}
+	}
+	return false;
+}
+bool isVertical(int x, int y) {
+	if (x < rows-2) { // size constraint checked
+		if ((puzzle[x-1][y] == '#' || x == 0) && puzzle[x+1][y] == '.' && puzzle[x+2][y] == '.') {
+			return true;
+		}
+	}
+	return false;
+}
+bool isClue(int x, int y) {
+	if ((isHorizontal(x, y) || isVertical(x, y)) && puzzle[x][y] == '.') return true;
+	return false;
+}
+
+int main() {
+	ifstream cin ("crosswords.in"); ofstream cout ("crosswords.out");
+	cin >> rows >> columns;
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < columns; j++) {
+			cin >> puzzle[i][j];
+		}
+	}
+	vector <pair <int, int> > clues;
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < columns; j++) {
+			if (isClue(i, j)) clues.pb(mp(i, j));
+		}
+	}
+	cout << clues.size() << endl;
+	for (int i = 0; i < clues.size(); i++) {
+		cout << clues[i].first + 1 << " " << clues[i].second + 1 << endl;
+	}
+}
