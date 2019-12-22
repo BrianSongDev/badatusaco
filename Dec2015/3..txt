@@ -1,0 +1,66 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define mp make_pair
+#define pb push_back
+
+using namespace std;
+
+vector <vector <pair <int, int> > > people;
+vector <vector <pair <int, bool> > > milk; // index is the type of milk, the person who drank it is first part of pair, if he/she got sick is second parameter
+vector <int> whoDrankMilk; // # of people who drank milk i (index)
+void updateGlobal(int p, int t) {
+	for (int i = 0; i < people[p].size(); i++) {
+		if (people[p][i].second < t) milk[people[p][i].first].push_back(make_pair(p, true));
+		else milk[people[p][i].first].push_back(make_pair(p, false));
+	}
+}
+bool notFound(int p, int typeOfMilk) {
+	for (int i = 0; i < milk[typeOfMilk].size(); i++) {
+		if (milk[typeOfMilk][i].first == p) return false;
+	}
+	return true;
+}
+void updateNotSick(int p) {
+	for (int i = 0; i < milk.size(); i++) {
+		if (notFound(p, i)) {
+			milk[i].push_back(make_pair(p, false));
+		}
+	}
+}
+
+int main() {
+	ifstream cin ("badmilk.in"); ofstream cout ("badmilk.out");
+	int n, m, d, s; cin >> n >> m >> d >> s;
+	people.resize(n+1);
+	whoDrankMilk.resize(m+1);
+	milk.resize(m+1);
+	for (int i = 0; i < d; i++) {
+		int p, m, t;
+		cin >> p >> m >> t;
+		whoDrankMilk[m]++;
+		people[p].push_back(make_pair(m, t));
+	}
+	for (int i = 0; i < s; i++) {
+		int p, t; cin >> p >> t;
+		updateGlobal(p, t);
+		// For the sick people, update the milks they didn't drink to be "not sick" because they couldn't have gotten sick otherwise
+		// people[p]
+		updateNotSick(p);
+	}
+	int maxPpl = 0;
+	for (int i = 0; i < milk.size(); i++) {
+		bool isSick = true;
+		for (int j = 0; j < milk[i].size(); j++) {
+			if (milk[i][j].second == false) isSick = false;
+		}
+		if (isSick) {
+			maxPpl = max(maxPpl, whoDrankMilk[i]);
+		}
+	}
+	cout << maxPpl << endl;
+}
