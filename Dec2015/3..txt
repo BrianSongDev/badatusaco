@@ -64,3 +64,5 @@ int main() {
 	}
 	cout << maxPpl << endl;
 }
+
+// 8 out of 10 cases
