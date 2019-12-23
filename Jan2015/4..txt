@@ -1,0 +1,67 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define mp make_pair
+#define pb push_back
+#define limitup 9223372036854775806
+#define limitdown -9223372036854775806
+
+using namespace std;
+
+vector <vector <int> > paths; // indice is first path, next indice is final path
+vector <vector <pair <int, int> > > speeds;
+vector <int> bessieSpeed, elsieSpeed;
+int n;
+
+void tryBessie(int counter, int time) {
+	for (int i = 0; i < paths[counter].size(); i++) {
+		// paths[counter][i] is the next feed, speeds[counter][i].first + time is next speed
+		if (paths[counter][i] != n) {
+			tryBessie(paths[counter][i], speeds[counter][i].first + time);
+		} else {
+			bessieSpeed.push_back(speeds[counter][i].first + time);
+		}
+	}
+}
+void tryElsie(int counter, int time) {
+	for (int i = 0; i < paths[counter].size(); i++) {
+		// paths[counter][i] is the next feed, speeds[counter][i].first + time is next speed
+		if (paths[counter][i] != n) {
+			tryElsie(paths[counter][i], speeds[counter][i].second + time);
+		} else {
+			elsieSpeed.push_back(speeds[counter][i].second + time);
+		}
+	}
+}
+int main() {
+	ifstream cin ("meeting.in"); ofstream cout ("meeting.out");
+	int m; cin >> n >> m;
+	paths.resize(n + 1);
+	speeds.resize(n + 1);
+	for (int i = 0; i < m; i++) {
+		int start, finish, bspeed, espeed; cin >> start >> finish >> bspeed >> espeed;
+		paths[start].push_back(finish);
+		speeds[start].push_back(make_pair(bspeed, espeed));
+	}
+	tryBessie(1, 0);
+	tryElsie(1, 0);
+	sort(bessieSpeed.begin(), bessieSpeed.end());
+	sort(elsieSpeed.begin(), elsieSpeed.end());
+	bool answer = false;
+	for (int i = 0; i < bessieSpeed.size(); i++) {
+		for (int j = 0; j < elsieSpeed.size(); j++) {
+			if (bessieSpeed[i] == elsieSpeed[j]) {
+				answer = true;
+				cout << bessieSpeed[i] << endl;
+				exit(EXIT_SUCCESS);
+			}
+		}
+	}
+	if (!answer) {
+		cout << "IMPOSSIBLE" << endl;
+	}
+}
