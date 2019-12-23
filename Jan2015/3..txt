@@ -1,0 +1,41 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define mp make_pair
+#define pb push_back
+#define limitup 9223372036854775806
+#define limitdown -9223372036854775806
+
+using namespace std;
+
+int checkBase(int n, int baseFrom) {
+	string a = to_string(n);
+	return (a[0]-'0') * pow(baseFrom, 2) + (a[1]-'0') * pow(baseFrom, 1) + (a[2]-'0');
+}
+pair <int, int> doBase(int x, int y) {
+	int baseX = 10, baseY = 10, one = x, two = y;
+	while (x != y) {
+		x = checkBase(one, baseX); y = checkBase(two, baseY);
+		if (x < y) {
+			baseX++;
+		} else if (x > y) {
+			baseY++;
+		} else {
+			return mp(baseX, baseY);
+		}
+	}
+}
+
+int main() {
+	ifstream cin ("whatbase.in"); ofstream cout ("whatbase.out");
+	int n; cin >> n;
+	for (int i = 0; i < n; i++) {
+		int a, b; cin >> a >> b;
+		cout << doBase(a, b).first << " " << doBase(a, b).second << endl;
+	}
+	
+}
