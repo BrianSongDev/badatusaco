@@ -1,0 +1,54 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define mp make_pair
+#define pb push_back
+#define limitup 9223372036854775806
+#define limitdown -9223372036854775806
+
+using namespace std;
+
+int result = 0;
+char hopscotch[16][16];
+int rows, columns;
+
+vector <pair<int, int> > findOppositeBelow (int x, int y, bool r) {
+	vector <pair<int, int> > coordinates;
+	for (int i = x + 1; i < rows; i++) {
+		for (int j = y + 1; j < columns; j++) {
+			if ((hopscotch[i][j] == 'R' && !r) || (hopscotch[i][j] == 'B' && r)) {
+				coordinates.pb(mp(i, j));
+			}
+		}  
+	}
+	return coordinates;
+}
+void checkWays(int x, int y, bool r) {
+	vector <pair<int, int> > coord;
+	// Must be 1 row below and 1 column below
+	if (x == rows - 1 && y == columns - 1) {
+		result++;
+	} else if (x < columns && y < rows)  {
+		coord = findOppositeBelow(x, y, r);
+		for (int i = 0; i < coord.size(); i++) {
+			checkWays(coord[i].first, coord[i].second, !r);
+		}
+	}
+}
+
+int main() {
+	ifstream cin ("hopscotch.in"); ofstream cout ("hopscotch.out");
+	cin >> rows >> columns;
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < columns; j++) {
+			cin >> hopscotch[i][j];
+		}
+	}
+	if (hopscotch[0][0] == 'R') checkWays(0, 0, true);
+	else checkWays(0, 0, false);
+	cout << result << endl;
+}
