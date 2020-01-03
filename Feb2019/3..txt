@@ -1,0 +1,56 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define mp make_pair
+#define pb push_back
+#define limitup 9223372036854775806
+#define limitdown -1 * 9223372036854775806
+#define intlimitup 999999
+#define intlimitdown -1 * 999999
+#define ll long long
+#define lo(a, y) for (int a = 0; a < y; a++) 
+#define lo1(a, y) for (int a = 1; a < y; a++)
+using namespace std;
+
+pair <int, int> res1 (intlimitdown, intlimitup), res2 (intlimitdown, intlimitup);
+
+void update1 (string onOff, int start, int end) {
+	if (onOff == "on") {
+		res1.second -= start; res1.first -= end;
+	} else if (onOff == "none") {
+		res1.first = max(res1.first, start); res1.second = min(res1.second, end);
+	} else {
+		res1.first += start; res1.second += end;
+	}
+}
+void update2 (string onOff, int start, int end) {
+	cout << "  " << res2.first << " " << res2.second << endl;
+	cout << "  START: " << start << "  END: " << end << " ONOFF: " << onOff << endl;
+	if (onOff == "on") {
+		res2.first += start; res2.second += end;
+	} else if (onOff == "none") {
+		res2.first = max(res2.first, start); res2.second = min(res2.second, end);
+	} else {
+		res2.first -= end; res2.second -= start;
+	}
+}
+
+int main() {
+	ifstream cin ("traffic.in"); ofstream cout ("traffic.out");
+	int n; cin >> n; vector <pair<string, pair<int, int> > > hi;
+	for (int i = 0; i < n; i++) {
+		string onOff; cin >> onOff;
+		int start, end; cin >> start >> end;
+		hi.pb(mp(onOff, mp(start, end)));
+		update2 (onOff, start, end);
+	}
+	for (int i = n-1; i >= 0; i--) {
+		update1 (hi[i].first, hi[i].second.first, hi[i].second.second);
+	}
+	cout << (res1.first < 0 ? 0 : res1.first) << " " << (res1.second < 0 ? 0 : res1.second) << endl;
+	cout << (res2.first < 0 ? 0 : res2.first) << " " << (res2.second < 0 ? 0 : res2.second) << endl;
+}

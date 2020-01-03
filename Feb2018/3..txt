@@ -1,0 +1,92 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define mp make_pair
+#define pb push_back
+#define limitup 9223372036854775806
+#define limitdown -9223372036854775806
+#define ll long long
+#define loop(a, x, y) for (int a = x; a < y; a++) 
+using namespace std;
+
+vector <int> cowLog;
+
+vector <bool> setFalse(vector <bool> minDay) {
+	for (int i = 0; i < minDay.size(); i++) {
+		minDay[i] = false;
+	}
+	return minDay;
+}
+
+bool verify() {
+	int current = cowLog[0], consecutive = 0;
+	if (current = -1) {
+		current = 0;
+	} else if (current > 0) return false;
+	for (int i = 0; i < cowLog.size(); i++) {
+		if (cowLog[i] == -1) {
+			consecutive++;
+		} else if (cowLog[i] == 0) {
+			current = 0;
+			consecutive = 0;
+		} else {
+			// We have to make sure it was not just following a string of consecutive -1's
+			if (consecutive != 0) { // There were -1's :(
+				// As long as it is either between current + 1 and consecutive + current + 1, we are ok
+				bool tr = false;
+				if ((cowLog[i] >= 1 && cowLog[i] <= consecutive) || (cowLog[i] == current + consecutive + 1)) tr = true;
+				current = cowLog[i];
+				if (!tr) {
+					return false;
+				}
+			} else {
+				if (cowLog[i] - 1 == current) {
+					current = cowLog[i];
+				} else return false;
+			}
+			consecutive = 0;
+		}
+	} 
+	return true;
+}
+
+int main() {
+	ifstream cin ("taming.in"); ofstream cout ("taming.out");
+	int n; cin >> n; cowLog.resize(n);
+	for (int i = 0; i < n; i++) {
+		cin >> cowLog[i];
+	}
+	if (!verify()) {
+		cout << "-1" << endl;
+		exit(EXIT_SUCCESS);
+	}
+	// Find minimum: we consider only the values that are not "-1." By default, day 0 is also counted as a breakout day.
+	vector <bool> minDay; minDay.resize(n); minDay = setFalse(minDay); minDay[0] = true; int min = 0;
+	for (int i = 0; i < n; i++) {
+		if (cowLog[i] != -1) {
+			minDay[i-cowLog[i]] = true;
+		}
+	}
+	for (int i = 0; i < n; i++) {
+		if (minDay[i]) min++;
+	}
+	// Find maximum: we consider -1 as well. Every occurence of -1 would be able to be counted as a breakout day. Along with this, it is important to also consider the values that are not "-1."
+	vector <bool> maxDay; maxDay.resize(n); maxDay = setFalse(maxDay); maxDay[0] = true; int max = 0;
+	for (int i = 0; i < n; i++) {
+		if (cowLog[i] != -1) {
+			maxDay[i-cowLog[i]] = true;
+			for (int j = i - cowLog[i] + 1; j <= i; j++) maxDay[j] = false;
+		} else {
+			maxDay[i] = true;
+		}
+	}
+	for (int i = 0; i < n; i++) {
+		if (maxDay[i]) max++;
+	}
+	cout << min << " " << max << endl;
+
+}

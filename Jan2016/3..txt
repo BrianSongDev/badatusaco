@@ -1,0 +1,58 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define mp make_pair
+#define pb push_back
+#define limitup 9223372036854775806
+#define limitdown -9223372036854775806
+#define ll long long
+using namespace std;
+
+vector <vector <vector <int> > > farm;
+vector <int> answers;
+		
+void runAnswers(int i, int j) {
+	sort(farm[i][j].begin(), farm[i][j].end());
+	for (int k = 1; k < farm[i][j].size(); k++) {
+		answers.push_back(farm[i][j][k] - farm[i][j][k-1]);
+	}
+}
+
+int main() {
+	ifstream cin ("mowing.in"); ofstream cout ("mowing.out");
+	int n; cin >> n; int currPosX = 1500, currPosY = 1500;
+	farm.resize(3001);
+	for (int i = 0; i < farm.size(); i++) {
+		farm[i].resize(3001);
+	}
+	int time = 1;
+	for (int i = 0; i < n; i++) {
+		char dir; int len; cin >> dir >> len; int j = 0;
+		while (j < len) {
+			if (dir == 'N') {
+				currPosY++;
+			} else if (dir == 'E') {
+				currPosX++;
+			} else if (dir == 'S') {
+				currPosY--;
+			} else {
+				currPosX--;
+			}
+			farm[currPosX][currPosY].push_back(time);
+			time++; j++;
+		}
+	}
+	for (int i = 0; i < farm.size(); i++) {
+		for (int j = 0; j < farm[i].size(); j++) {
+			if (farm[i][j].size() > 0) {
+				runAnswers(i, j);
+			}
+		}
+	}
+	sort(answers.begin(), answers.end());
+	cout << (answers.size() > 0 ? answers[0] : -1) << endl;
+}

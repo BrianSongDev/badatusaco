@@ -1,0 +1,80 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define mp make_pair
+#define pb push_back
+#define limitup 9223372036854775806
+#define limitdown -9223372036854775806
+#define ll long long
+#define loop(a, x, y) for (int a = x; a < y; a++) 
+using namespace std;
+
+vector <pair<int, int> > coordinates, coordinates1;
+
+int calculArea(vector <pair<int, int> > graph);
+
+int main() {
+	ifstream cin ("reduce.in"); ofstream cout ("reduce.out");
+	int n, area; cin >> n;
+	for (int i = 0; i < n; i++) {
+		int x, y; cin >> x >> y;
+		coordinates.pb(mp(x, y));
+		coordinates1.pb(mp(y, x));
+	}
+	sort(coordinates.begin(), coordinates.end());
+	sort(coordinates1.begin(), coordinates1.end());
+	area = calculArea(coordinates);
+	// First extract smallest x coordinates. We need 8 coordinates to try, 2 small x, and 2 small y, 2 large x, and 2 large y
+	for (int i = 0; i < 2; i++) {
+		vector <pair<int, int> > copy;
+		copy = coordinates;
+//		cout << "simulated removing " << copy[i].first << " " << copy[i].second << endl;
+		copy.erase(copy.begin() + i);
+		area = min(calculArea(copy), area);
+	}
+	for (int i = 0; i < 2; i++) {
+		vector <pair<int, int> > copy1;
+		copy1 = coordinates1;
+//		cout << "simulated removing " << copy1[i].second << " " << copy1[i].first << endl;
+		copy1.erase(copy1.begin() + i);
+		for (int j = 0; j < copy1.size(); j++) {
+			swap(copy1[j].first, copy1[j].second);
+		}
+		sort(copy1.begin(), copy1.end());
+		area = min(calculArea(copy1), area);
+	}
+	for (int i = 0; i < 2; i++) {
+		vector <pair<int, int> > copy1;
+		copy1 = coordinates1;
+//		cout << "simulated removing " << copy1[i].second << " " << copy1[i].first << endl;
+		copy1.erase(copy1.begin() + copy1.size() - 1);
+		for (int j = 0; j < copy1.size(); j++) {
+			swap(copy1[j].first, copy1[j].second);
+		}
+		sort(copy1.begin(), copy1.end());
+		area = min(calculArea(copy1), area);
+	}
+	for (int i = 0; i < 2; i++) {
+		vector <pair<int, int> > copy;
+		copy = coordinates;
+//		cout << "simulated removing " << copy[i].first << " " << copy[i].second << endl;
+		copy.erase(copy.begin() + copy.size() - 1);
+		area = min(calculArea(copy), area);
+	}
+	cout << area << endl;
+}
+
+int calculArea(vector <pair<int, int> > graph) {
+	int minX = 999, minY = 999, maxX = 0, maxY = 0;
+	for (int i = 0; i < graph.size(); i++) {
+		minX = min(graph[i].first, minX);
+		minY = min(graph[i].second, minY);
+		maxX = max(graph[i].first, maxX);
+		maxY = max(graph[i].second, maxY);
+	}
+	return (maxX - minX) * (maxY - minY);
+}

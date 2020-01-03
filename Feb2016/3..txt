@@ -1,0 +1,44 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define mp make_pair
+#define pb push_back
+#define limitup 9223372036854775806
+#define limitdown -9223372036854775806
+#define ll long long
+using namespace std;
+
+int main() {
+	ifstream cin ("balancing.in"); ofstream cout ("balancing.out");
+	int n, b, res = 999; cin >> n >> b;
+	int cowsFirst[n], cowsSecond[n];
+	for (int i = 0; i < n; i++) {
+		int x, y; cin >> x >> y;
+		cowsFirst[i] = x;
+		cowsSecond[i] = y;
+	}
+	for (int i = 0; i < n; i++) {
+		for (int k = 0; k < n; k++) {
+			pair <int, int> beam = mp(cowsFirst[i] + 1, cowsSecond[k] + 1);
+			int a = 0, b = 0, c = 0, d = 0;
+			for (int j = 0; j < n; j++) {
+				int x = cowsFirst[j], y = cowsSecond[j];
+				if (x < beam.first && y < beam.second) {
+					a++;
+				} else if (x > beam.first && y < beam.second) {
+					b++;
+				} else if (x < beam.first && y > beam.second) {
+					c++;
+				} else {
+					d++;
+				}
+			}
+			res = min(res, max(max(a, b), max(c, d)));	
+		}
+	}
+	cout << res << endl;
+}

@@ -1,0 +1,43 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define mp make_pair
+#define pb push_back
+#define limitup 9223372036854775806
+#define limitdown -9223372036854775806
+#define ll long long
+using namespace std;
+
+vector <pair <ll, ll> > bales; ll res = 0;
+
+int main() {
+	ifstream cin ("trapped.in"); ofstream cout ("trapped.out");
+	int n; cin >> n;
+	for (int i = 0; i < n; i++) {
+		ll size, pos; cin >> size >> pos;
+		bales.pb(mp(pos, size));
+	}
+	sort(bales.begin(), bales.end());
+	for (int i = 0; i < bales.size() - 1; i++) {
+		int left = i, right = i+1, dist = bales[right].first - bales[left].first;
+		while (i >= 0 && right <= bales.size()-1) {
+			bool canGetOut = false;
+			canGetOut = false;
+			if (bales[right].first - bales[left].first > bales[right].second) {
+				right++;
+				canGetOut = true;
+			} 
+			if (bales[right].first - bales[left].first > bales[left].second) {
+				left--;
+				canGetOut = true;
+			}
+			if (!canGetOut) break;
+		}
+		if (left >= 0 && right <= bales.size()-1) res += dist;
+	}
+	cout << res << endl;
+}

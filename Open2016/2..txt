@@ -1,0 +1,119 @@
+#include <iostream> //cin, cout
+#include <fstream> //fin, fout
+#include <vector> //vector
+#include <utility> //vector of pairs
+#include <algorithm> //sort, abs, etc.
+#include <string>
+#include <math.h>
+#define mp make_pair
+#define pb push_back
+#define limitup 9223372036854775806
+#define limitdown -9223372036854775806
+#define ll long long
+#define loop(a, x, y) for (int a = x; a < y; a++) 
+using namespace std;
+
+vector <vector<char> > modelGraph;
+vector <vector<vector <char> > > brokenPieces; //  A collection of arrays
+
+bool checkPieces(vector <vector <char> > g1, vector <vector <char> > g2);
+
+int n, modelX = -1, modelY = -1;
+
+int main() {
+	ifstream cin ("bcs.in"); ofstream cout ("bcs.out");
+	int k, totalHash = 0; cin >> n >> k;
+	modelGraph.resize(n);
+	for (int i = 0; i < n; i++) {
+		modelGraph[i].resize(n);
+	}
+	brokenPieces.resize(k); // each graph will be n units long, there will be k graphs
+	for (int i = 0; i < k; i++) {
+		brokenPieces[i].resize(n);
+		for (int j = 0; j < brokenPieces[i].size(); j++) {
+			brokenPieces[i][j].resize(n);
+		}
+	}
+	
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			char hash; cin >> hash;
+			modelGraph[i][j] = hash;
+		}
+	}
+	int a = -1, b = -1, c = -1, d = -1;
+	for (int i = 0; i < modelGraph.size(); i++) {
+		for (int j = 0; j < modelGraph[i].size(); j++) {
+			if (modelGraph[i][j] == '#' && a == -1 && b == -1) a = i, b = j;
+			if (modelGraph[j][i] == '#' && c == -1 && d == -1) c = j, d = i;
+		}
+	}
+	modelX = min(a, c), modelY = min(b, d);
+	int ind = 0;
+	for (int ind = 0; ind < k; ind++) {
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				cin >> brokenPieces[ind][i][j];
+			}
+		}	
+	}
+	for (int i = 0; i < k; i++) { // we already make sure that even if top graph is below bottom graph, it will still be considered (ex. (3,1) == (1,3)) by running over values from 0 to k.  
+		for (int j = 0; j < k; j++) {
+			if (checkPieces(brokenPieces[i], brokenPieces[j]) && i != j) {
+				if (j < i) {
+					swap(i, j);
+				}
+				cout << i + 1 << " " << j + 1 << endl; 
+				exit(EXIT_SUCCESS);
+			}
+		}
+	}
+}
+bool good (vector <vector <char> > g, int x, int y) {
+	for (int i = x, a = modelX; a < modelGraph.size(); i++, a++) {
+		for (int j = y, b = modelY; b < modelGraph[a].size(); j++, b++) {
+			if (g[i][j] != modelGraph[a][b]) return false;
+		}
+	}
+	return true;
+}
+bool checkPieces (vector <vector <char> > g1, vector <vector <char> > g2) { // We will assume that g1 is supposed to be above g2, we transpose up, down, left, and right
+	int hor = 0;
+	while (hor >= -1 * n) { // Keeps going up
+		int vert = n;
+		while (vert >= -1 * n) { // Keeps going left
+			vector <vector <char> > g3; g3.resize(4 * n); for (int i = 0; i < g3.size(); i++) g3[i].resize(4 * n);
+			// starting point for copying of first vector (g1) starts at point (n, n)
+			for (int i = n; i < 2 * n; i++) {
+				for (int j = n; j < 2 * n; j++) {
+					g3[i][j] = g1[i-n][j-n];
+				}
+			}
+			// copying g2, the next graph, which starts at point (2n, n)
+			for (int i = 2 * n; i < 3 * n; i++) {
+				for (int j = n; j < 2 * n; j++) {
+					if (g3[i + hor][j + vert] != '#') {
+						g3[i + hor][j + vert] = g2[i-2 * n][j-n];
+					}
+				}
+			}
+			// earliest coordinate is first instance of a #, going from top left to bottom right
+			int a = -1, b = -1, c = -1, d = -1;
+			int e = -1, f = -1, g = -1, h = -1;
+			for (int i = 0; i < g3.size(); i++) {
+				for (int j = 0; j < g3[i].size(); j++) {
+					if (g3[i][j] == '#' && a == -1 && b == -1) a = i, b = j;
+					if (g3[j][i] == '#' && c == -1 && d == -1) c = j, d = i;
+					if (g3[i][j] != '#' && g3[i][j] != '.') g3[i][j] = '.';
+				}
+			}
+			int earlyX = min(a, c), earlyY = min(b, d);
+			if (good(g3, earlyX, earlyY)) {
+				return true;
+			}
+			vert--;
+		}
+		hor--;
+	}
+	return false;
+}
